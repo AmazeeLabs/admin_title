@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * Implement hook_form_BASE_FORM_ID_alter().
+ */
+function admin_title_form_node_article_edit_form_alter(&$form, &$form_state, $form_id) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $form_state->getFormObject()->getEntity();
+  $form['#title'] = t('<em>Edit @type</em> @title', array(
+    '@type' => node_get_type_label($node),
+    '@title' => $node->getFields()['field_admin_title']->value
+  ));
+}

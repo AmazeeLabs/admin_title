@@ -1,0 +1,4 @@
+name: 'Admin title'
+description: 'Shows the admin title while administrating and article that has set the "field_admin_title" field.'
+core: 8.x
+type: module

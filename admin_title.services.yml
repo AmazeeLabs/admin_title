@@ -1,0 +1,5 @@
+services:
+  admin_title.subscriber:
+    class: Drupal\admin_title\Routing\AdminTitleRouteSubscriber
+    tags:
+      - { name: event_subscriber }
