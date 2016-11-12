@@ -6,7 +6,7 @@ A Drupal 8 module providing the admin title support for content entities.
 
 - Improves titles of content entity forms
 - Uses the admin title field value in content entity form titles
-- Fallbacks to the entity label if the admin title field does not exists or is empty
+- Fallbacks to the entity label if the admin title field does not exist or is empty
 
 ## Requirements for the admin title field
 
