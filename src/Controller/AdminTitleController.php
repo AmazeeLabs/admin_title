@@ -3,6 +3,7 @@
 namespace Drupal\admin_title\Controller;
 
 use Drupal\content_translation\Controller\ContentTranslationController;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -16,26 +17,25 @@ class AdminTitleController extends ContentTranslationController {
    */
   public function overview(RouteMatchInterface $route_match, $entity_type_id = NULL) {
     $build = parent::overview($route_match, $entity_type_id);
-    /** @var \Drupal\node\Entity\Node $entity */
     $entity = $build['#entity'];
-    if ($entity->bundle() == 'article' && $entity->hasField('field_admin_title')) {
-      $admin_title = $entity->get('field_admin_title')->value;
-      $build['#title'] = t('Translations of %label', array('%label' => $admin_title));
-      $original = $entity->getUntranslated()->language()->getId();
+    if ($entity instanceof ContentEntityInterface) {
+      $args = _admin_title_get_common_args($entity);
+
+      // Update page title.
+      $build['#title'] = $args['@bundle'] === NULL
+        ? $this->t('Translations of @entity_type "@title")', $args)
+        : $this->t('Translations of @bundle "@title" (@entity_type)', $args);
+
+      // Update Translation column.
       foreach ($build['content_translation_overview']['#rows'] as $delta => $row) {
-        /** @var \Drupal\Core\Language\Language $language */
-        $language = $row[4]['data']['#links']['edit']['language'];
-        $translated_entity = $entity->getTranslation($language->getId());
-        /** @var \Drupal\Core\Url $url */
-        $url = $translated_entity->urlInfo();
-        $translated_admin_title = $translated_entity->get('field_admin_title')->value;
-        if (!empty($url)) {
-          $row_title = Link::fromTextAndUrl($translated_admin_title, $url);
+        if (isset($row[3]['data']['#links']['edit']['language'])) {
+          $entity = $entity->getTranslation($row[3]['data']['#links']['edit']['language']->getId());
+          $admin_title_field = $entity->get('field_admin_title');
+          if (!$admin_title_field->isEmpty() && isset($admin_title_field->value) && is_string($admin_title_field->value)) {
+            $link = Link::fromTextAndUrl($admin_title_field->value, $entity->toUrl());
+            $build['content_translation_overview']['#rows'][$delta][1] = $link;
+          }
         }
-        else {
-          $row_title = $original == $language->getId() ? $admin_title : $this->t('n/a');
-        }
-        $build['content_translation_overview']['#rows'][$delta][1] = $row_title;
       }
     }
     return $build;

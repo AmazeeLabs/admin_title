@@ -1,13 +1,99 @@
 <?php
 
+use Drupal\Core\Entity\ContentEntityFormInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+
 /**
- * Implement hook_form_BASE_FORM_ID_alter().
+ * Implement hook_form_alter().
  */
-function admin_title_form_node_article_edit_form_alter(&$form, &$form_state, $form_id) {
-  /** @var \Drupal\node\Entity\Node $node */
-  $node = $form_state->getFormObject()->getEntity();
-  $form['#title'] = t('<em>Edit @type</em> @title', array(
-    '@type' => node_get_type_label($node),
-    '@title' => $node->getFields()['field_admin_title']->value
-  ));
+function admin_title_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Detect content entity form.
+  $form_object = $form_state->getFormObject();
+  if ($form_object instanceof ContentEntityFormInterface) {
+    $entity = $form_object->getEntity();
+    if ($entity instanceof ContentEntityInterface) {
+      $args = _admin_title_get_common_args($entity);
+
+      // Update form title.
+      if ($entity->isNew()) {
+        $form['#title'] = $args['@bundle'] === NULL
+          ? t('Create @entity_type)', $args)
+          : t('Create @bundle (@entity_type)', $args);
+      }
+      elseif (!$entity->isTranslatable()) {
+        $form['#title'] = $args['@bundle'] === NULL
+          ? t('Edit @entity_type "@title"', $args)
+          : t('Edit @bundle "@title" (@entity_type)', $args);
+      }
+      else {
+        $languages = \Drupal::languageManager()->getLanguages();
+        $original_langcode = $entity->getUntranslated()->language()->getId();
+        $source_langcode = NULL;
+        if ($source = $form_state->get(['content_translation', 'source'])) {
+          $source_langcode = $source->getId();
+        }
+        $target_langcode = $form_object->getFormLangcode($form_state);
+        $args += ['%language' => $languages[$target_langcode]->getName()];
+        if ($original_langcode == $target_langcode) {
+          $form['#title'] = $args['@bundle'] === NULL
+            ? t('Edit %language translation of @entity_type "@title" (original language)', $args)
+            : t('Edit %language translation (original language) of @bundle "@title" (@entity_type)', $args);
+        }
+        elseif ($source_langcode === NULL) {
+          $form['#title'] = $args['@bundle'] === NULL
+            ? t('Edit %language translation of @entity_type "@title"', $args)
+            : t('Edit %language translation of @bundle "@title" (@entity_type)', $args);
+        }
+        else {
+          $form['#title'] = $args['@bundle'] === NULL
+            ? t('Create %language translation of @entity_type "@title"', $args)
+            : t('Create %language translation of @bundle "@title" (@entity_type)', $args);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function admin_title_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'form_alter') {
+    $group = $implementations['admin_title'];
+    unset($implementations['admin_title']);
+    $implementations['admin_title'] = $group;
+  }
+}
+
+/**
+ * Returns common arguments to be used in entity form titles.
+ *
+ * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+ *
+ * @return array
+ *   An array with the following keys:
+ *   - "@entity_type": entity type human name
+ *   - "@bundle": bundle human name, or NULL if entity type is not bundleable
+ *   - "@title": value of field_admin_title, or entity label
+ */
+function _admin_title_get_common_args(ContentEntityInterface $entity) {
+  $title = $entity->label();
+  if ($entity->hasField('field_admin_title')) {
+    $admin_title_field = $entity->get('field_admin_title');
+    if (!$admin_title_field->isEmpty() && isset($admin_title_field->value) && is_string($admin_title_field->value)) {
+      $title = $admin_title_field->value;
+    }
+  }
+  $entity_type = $entity->getEntityType()->getLabel();
+  $bundle = NULL;
+  if ($bundle_key = $entity->getEntityType()->getKey('bundle')) {
+    $bundle = $entity->{$bundle_key}->referencedEntities()[0]->label();
+  }
+  return [
+    '@entity_type' => $entity_type,
+    '@bundle' => $bundle,
+    '@title' => $title,
+  ];
 }
