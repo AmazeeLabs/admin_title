@@ -2,6 +2,8 @@
 
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -68,6 +70,13 @@ function admin_title_module_implements_alter(&$implementations, $hook) {
 }
 
 /**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function admin_title_field_widget_entity_reference_autocomplete_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $element['target_id']['#type'] = 'entity_autocomplete_admin_title';
+}
+
+/**
  * Returns common arguments to be used in entity form titles.
  *
  * @param \Drupal\Core\Entity\ContentEntityInterface $entity
@@ -79,13 +88,6 @@ function admin_title_module_implements_alter(&$implementations, $hook) {
  *   - "@title": value of field_admin_title, or entity label
  */
 function _admin_title_get_common_args(ContentEntityInterface $entity) {
-  $title = $entity->label();
-  if ($entity->hasField('field_admin_title')) {
-    $admin_title_field = $entity->get('field_admin_title');
-    if (!$admin_title_field->isEmpty() && isset($admin_title_field->value) && is_string($admin_title_field->value)) {
-      $title = $admin_title_field->value;
-    }
-  }
   $entity_type = $entity->getEntityType()->getLabel();
   $bundle = NULL;
   if ($bundle_key = $entity->getEntityType()->getKey('bundle')) {
@@ -94,6 +96,32 @@ function _admin_title_get_common_args(ContentEntityInterface $entity) {
   return [
     '@entity_type' => $entity_type,
     '@bundle' => $bundle,
-    '@title' => $title,
+    '@title' => _admin_title_get_admin_title($entity, TRUE, FALSE),
   ];
+}
+
+/**
+ * Returns admin title of an entity.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ * @param bool $fallback_to_label
+ * @param bool $translate
+ * @param string|null $translation_langcode
+ *
+ * @return null|string
+ */
+function _admin_title_get_admin_title(EntityInterface $entity, $fallback_to_label, $translate, $translation_langcode = NULL) {
+  if ($translate) {
+    $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $translation_langcode);
+  }
+  $admin_title = NULL;
+  if ($entity instanceof FieldableEntityInterface && $entity->hasField('field_admin_title')) {
+    $admin_title_field = $entity->get('field_admin_title');
+    if (!$admin_title_field->isEmpty() && isset($admin_title_field->value) && is_string($admin_title_field->value)) {
+      $admin_title = $admin_title_field->value;
+    }
+  }
+  return $admin_title === NULL && $fallback_to_label
+    ? $entity->label()
+    : $admin_title;
 }

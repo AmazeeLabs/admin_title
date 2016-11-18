@@ -6,6 +6,10 @@ A Drupal 8 module providing the admin title support for content entities.
 
 - Improves titles of content entity forms
 - Uses the admin title field value in content entity form titles
+- Improves Autocomplete widget of the entity reference fields
+  - Uses admin titles in fields (including autocomplete)
+  - Translates admin titles into current content language
+  - To get autocomplete results display admin titles, you have to use "Views: Filter by an entity reference view (with admin title support)" reference method in the field settings
 - Fallbacks to the entity label if the admin title field does not exist or is empty
 
 ## Requirements for the admin title field

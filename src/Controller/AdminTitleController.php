@@ -29,10 +29,10 @@ class AdminTitleController extends ContentTranslationController {
       // Update Translation column.
       foreach ($build['content_translation_overview']['#rows'] as $delta => $row) {
         if (isset($row[3]['data']['#links']['edit']['language'])) {
-          $entity = $entity->getTranslation($row[3]['data']['#links']['edit']['language']->getId());
-          $admin_title_field = $entity->get('field_admin_title');
-          if (!$admin_title_field->isEmpty() && isset($admin_title_field->value) && is_string($admin_title_field->value)) {
-            $link = Link::fromTextAndUrl($admin_title_field->value, $entity->toUrl());
+          $langcode = $row[3]['data']['#links']['edit']['language']->getId();
+          $admin_title = _admin_title_get_admin_title($entity, FALSE, TRUE, $langcode);
+          if ($admin_title !== NULL) {
+            $link = Link::fromTextAndUrl($admin_title, $entity->toUrl());
             $build['content_translation_overview']['#rows'][$delta][1] = $link;
           }
         }
