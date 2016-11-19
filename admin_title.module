@@ -90,8 +90,11 @@ function admin_title_field_widget_entity_reference_autocomplete_form_alter(&$ele
 function _admin_title_get_common_args(ContentEntityInterface $entity) {
   $entity_type = $entity->getEntityType()->getLabel();
   $bundle = NULL;
-  if ($bundle_key = $entity->getEntityType()->getKey('bundle')) {
-    $bundle = $entity->{$bundle_key}->referencedEntities()[0]->label();
+  $bundle_info = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity->getEntityTypeId());
+  if (count($bundle_info) > 1) {
+    if (isset($bundle_info[$entity->bundle()]['label'])) {
+      $bundle = $bundle_info[$entity->bundle()]['label'];
+    }
   }
   return [
     '@entity_type' => $entity_type,
