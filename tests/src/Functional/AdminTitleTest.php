@@ -56,7 +56,10 @@ class AdminTitleTest extends BrowserTestBase {
     $language = ConfigurableLanguage::createFromLangcode('gsw-berne');
     $language->save();
 
-    $this->createContentType(['article', 'Article']);
+    $this->createContentType([
+      'type' => 'article',
+      'Article'
+    ]);
 
     // Enable entity translations for article.
     $content_translation_manager = \Drupal::service('content_translation.manager');
@@ -92,7 +95,7 @@ class AdminTitleTest extends BrowserTestBase {
     ));
     $field->save();
 
-    $this->drupalGet('/');
+    $this->drupalGet('<front>');
   }
 
 }
