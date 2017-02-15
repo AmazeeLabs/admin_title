@@ -4,6 +4,7 @@ namespace Drupal\admin_title\Plugin\EntityReferenceSelection;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\views\Plugin\EntityReferenceSelection\ViewsSelection;
+use Drupal\views\ViewExecutable;
 
 /**
  * Plugin implementation of the 'selection' entity_reference.
@@ -25,8 +26,8 @@ class AdminTitleViewsSelection extends ViewsSelection {
    */
   public function getReferenceableEntities($match = NULL, $match_operator = 'CONTAINS', $limit = 0) {
     $return = parent::getReferenceableEntities($match, $match_operator, $limit);
-    if ($entity_type = $this->view->getBaseEntityType()) {
-      $storage = \Drupal::entityTypeManager()->getStorage($entity_type->id());
+    if ($entity_type_id = $this->getEntityTypeId()) {
+      $storage = \Drupal::entityTypeManager()->getStorage($entity_type_id);
       foreach ($return as $bundle => $items) {
         foreach ($items as $entity_id => $item) {
           if ($entity = $storage->load($entity_id)) {
@@ -36,6 +37,27 @@ class AdminTitleViewsSelection extends ViewsSelection {
       }
     }
     return $return;
+  }
+
+  /**
+   * Returns target entity type ID.
+   *
+   * ViewExecutable::getBaseEntityType() was introduced in Drupal 8.2. This
+   * function is a fallback to support Drupal < 8.2.
+   *
+   * @return string|null
+   */
+  protected function getEntityTypeId() {
+    if (is_callable([$this->view, 'getBaseEntityType'])) {
+      $entity_type = $this->view->getBaseEntityType();
+      if ($entity_type && is_callable([$entity_type, 'id'])) {
+        return $entity_type->id();
+      }
+    }
+    if (isset($this->configuration['target_type'])) {
+      return $this->configuration['target_type'];
+    }
+    return NULL;
   }
 
 }
