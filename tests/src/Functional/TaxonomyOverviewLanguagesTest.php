@@ -10,11 +10,9 @@ use Drupal\Tests\BrowserTestBase;
 /**
  * Tests "Translation" column on taxonomy overview pages.
  *
- * @see admin_title_form_taxonomy_overview_terms_alter()
- *
- * @group custom
+ * @group admin_title
  */
-class TaxonomyOverviewLanguages extends BrowserTestBase {
+class TaxonomyOverviewLanguagesTest extends BrowserTestBase {
 
   use TaxonomyTestTrait;
   use StringTranslationTrait;
@@ -53,9 +51,11 @@ class TaxonomyOverviewLanguages extends BrowserTestBase {
   }
 
   /**
-   * Test admin title.
+   * Tests "Translation" column on taxonomy overview pages.
+   *
+   * @see admin_title_form_taxonomy_overview_terms_alter()
    */
-  public function testAdminTitle() {
+  public function testTaxonomyOverviewLanguages() {
     $this->drupalLogin($this->adminUser);
 
     /** @var \Drupal\taxonomy\Entity\Vocabulary $vocabulary */
