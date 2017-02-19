@@ -11,6 +11,7 @@ A Drupal 8 module providing the admin title support for content entities.
   - Translates admin titles into current content language
   - To get autocomplete results display admin titles, you have to use "Views: Filter by an entity reference view (with admin title support)" reference method in the field settings
 - Fallbacks to the entity label if the admin title field does not exist or is empty
+- Adds "Languages" column to taxonomy overview pages
 
 ## Requirements for the admin title field
 
