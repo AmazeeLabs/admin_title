@@ -26,15 +26,33 @@ class AdminTitleController extends ContentTranslationController {
         ? $this->t('Translations of @entity_type "@title")', $args)
         : $this->t('Translations of @bundle "@title" (@entity_type)', $args);
 
+      // Get column indexes. They are not constant.
+      $translation_key = NULL;
+      $operations_key = NULL;
+      $translation_string = (string) $this->t('Translation');
+      $operations_string = (string) $this->t('Operations');
+      foreach ($build['content_translation_overview']['#header'] as $key => $header) {
+        $header_string = (string) $header;
+        if ($header_string == $translation_string) {
+          $translation_key = $key;
+        }
+        elseif ($header_string == $operations_string) {
+          $operations_key = $key;
+        }
+      }
+      if ($translation_key === NULL || $operations_key === NULL) {
+        return $build;
+      }
+
       // Update Translation column.
       foreach ($build['content_translation_overview']['#rows'] as $delta => $row) {
-        if (isset($row[3]['data']['#links']['edit']['language'])) {
-          $langcode = $row[3]['data']['#links']['edit']['language']->getId();
+        if (isset($row[$operations_key]['data']['#links']['edit']['language'])) {
+          $langcode = $row[$operations_key]['data']['#links']['edit']['language']->getId();
           $translation = $entity->getTranslation($langcode);
           $admin_title = _admin_title_get_admin_title($translation, FALSE, FALSE);
           if ($admin_title !== NULL) {
             $link = Link::fromTextAndUrl($admin_title, $translation->toUrl());
-            $build['content_translation_overview']['#rows'][$delta][1] = $link;
+            $build['content_translation_overview']['#rows'][$delta][$translation_key] = $link;
           }
         }
       }
