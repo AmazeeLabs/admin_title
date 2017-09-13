@@ -2,9 +2,7 @@
 
 namespace Drupal\admin_title\Plugin\EntityReferenceSelection;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\views\Plugin\EntityReferenceSelection\ViewsSelection;
-use Drupal\views\ViewExecutable;
 
 /**
  * Plugin implementation of the 'selection' entity_reference.
