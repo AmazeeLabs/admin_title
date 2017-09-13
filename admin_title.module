@@ -25,7 +25,7 @@ function admin_title_form_alter(&$form, FormStateInterface $form_state, $form_id
       // Update form title.
       if ($entity->isNew()) {
         $form['#title'] = $args['@bundle'] === NULL
-          ? t('Create @entity_type)', $args)
+          ? t('Create @entity_type', $args)
           : t('Create @bundle (@entity_type)', $args);
       }
       elseif (!$entity->isTranslatable()) {
