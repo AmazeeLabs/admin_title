@@ -22,7 +22,7 @@ class AdminTitleEntityAutocomplete extends EntityAutocomplete {
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     foreach ($entities as $entity) {
       $label = ($entity->access('view label'))
-        ? _admin_title_get_admin_title($entity, TRUE, TRUE)
+        ? _admin_title_get_admin_title($entity, TRUE, TRUE, NULL, TRUE)
         : t('- Restricted access -');
       if (!$entity->isNew()) {
         $label .= ' (' . $entity->id() . ')';

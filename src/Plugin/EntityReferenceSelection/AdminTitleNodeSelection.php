@@ -41,7 +41,7 @@ class AdminTitleNodeSelection extends NodeSelection {
     foreach ($options as $bundle => $id_to_label_map) {
       $entities = $this->entityManager->getStorage($target_type)->loadMultiple(array_keys($id_to_label_map));
       foreach ($entities as $entity_id => $entity) {
-        $options[$bundle][$entity_id] = Html::escape(_admin_title_get_admin_title($entity, TRUE, TRUE));
+        $options[$bundle][$entity_id] = Html::escape(_admin_title_get_admin_title($entity, TRUE, TRUE, NULL, TRUE));
       }
     }
 

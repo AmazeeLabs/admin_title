@@ -29,7 +29,7 @@ class AdminTitleViewsSelection extends ViewsSelection {
       foreach ($return as $bundle => $items) {
         foreach ($items as $entity_id => $item) {
           if ($entity = $storage->load($entity_id)) {
-            $return[$bundle][$entity_id] = _admin_title_get_admin_title($entity, TRUE, TRUE);
+            $return[$bundle][$entity_id] = _admin_title_get_admin_title($entity, TRUE, TRUE, NULL, TRUE);
           }
         }
       }

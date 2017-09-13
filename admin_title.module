@@ -135,10 +135,11 @@ function _admin_title_get_common_args(ContentEntityInterface $entity) {
  * @param bool $fallback_to_label
  * @param bool $translate
  * @param string|null $translation_langcode
+ * @param bool $with_label_in_brackets
  *
  * @return null|string
  */
-function _admin_title_get_admin_title(EntityInterface $entity, $fallback_to_label, $translate, $translation_langcode = NULL) {
+function _admin_title_get_admin_title(EntityInterface $entity, $fallback_to_label, $translate, $translation_langcode = NULL, $with_label_in_brackets = FALSE) {
   if ($translate) {
     $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $translation_langcode);
   }
@@ -147,6 +148,9 @@ function _admin_title_get_admin_title(EntityInterface $entity, $fallback_to_labe
     $admin_title_field = $entity->get('field_admin_title');
     if (!$admin_title_field->isEmpty() && isset($admin_title_field->value) && is_string($admin_title_field->value)) {
       $admin_title = $admin_title_field->value;
+      if ($with_label_in_brackets) {
+        $admin_title = $admin_title . ' [' . t('Public title:') . ' ' . $entity->label() . ']';
+      }
     }
   }
   return $admin_title === NULL && $fallback_to_label
