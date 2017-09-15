@@ -8,6 +8,7 @@ A Drupal 8 module providing the admin title support for content entities.
 - Uses the admin title field value in content entity form titles
 - Alters Entity Reference, Link, Menu, etc. widgets to use admin title in the autocomplete
   - If views reference method is required: change it to "Views: Filter by an entity reference view (with admin title support)"
+- Alters [Linkit](https://www.drupal.org/project/linkit) (8.x-5.x) autocomplete to search in both title and admin title fields.
 - Fallbacks to the entity label if the admin title field does not exist or is empty
 - Adds "Languages" column to taxonomy overview pages
 
