@@ -4,7 +4,7 @@ namespace Drupal\Tests\admin_title\Functional;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\language\Entity\ConfigurableLanguage;
-use Drupal\taxonomy\Tests\TaxonomyTestTrait;
+use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
 use Drupal\Tests\BrowserTestBase;
 
 /**

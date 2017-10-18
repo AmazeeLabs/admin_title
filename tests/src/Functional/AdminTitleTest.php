@@ -5,8 +5,6 @@ namespace Drupal\Tests\admin_title\Functional;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
-use Drupal\simpletest\AssertContentTrait;
-use Drupal\simpletest\ContentTypeCreationTrait;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -15,8 +13,6 @@ use Drupal\Tests\BrowserTestBase;
  * @group admin_title
  */
 class AdminTitleTest extends BrowserTestBase {
-  use AssertContentTrait;
-  use ContentTypeCreationTrait;
 
   /**
    * The admin user.
