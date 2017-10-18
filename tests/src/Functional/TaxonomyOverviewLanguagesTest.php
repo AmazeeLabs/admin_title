@@ -4,7 +4,7 @@ namespace Drupal\Tests\admin_title\Functional;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\language\Entity\ConfigurableLanguage;
-use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
+use Drupal\taxonomy\Tests\TaxonomyTestTrait;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -63,6 +63,7 @@ class TaxonomyOverviewLanguagesTest extends BrowserTestBase {
     $edit = [
       'default_language[content_translation]' => TRUE,
     ];
+    $this->drupalGet('admin/structure/taxonomy/manage/' . $vocabulary->id()); // This is a fix for random test fails on Drupal 8.4.0.
     $this->drupalPostForm('admin/structure/taxonomy/manage/' . $vocabulary->id(), $edit, $this->t('Save'));
 
     $this->createTerm($vocabulary, ['name' => 'EN', 'langcode' => 'en']);
