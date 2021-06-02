@@ -5,7 +5,7 @@ namespace Drupal\Tests\admin_title\Functional;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
-use Drupal\simpletest\AssertContentTrait;
+use Drupal\KernelTests\AssertContentTrait
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\BrowserTestBase;
 
